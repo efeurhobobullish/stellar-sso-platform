@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'accounts',
 
     # third party apps
     'allauth',
@@ -47,6 +48,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
+
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -167,5 +170,10 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = 'home'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'accounts_login'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGIN_REDIRECT_URL = '/dashboard'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/dashboard'
+
+# for crispy forms
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
