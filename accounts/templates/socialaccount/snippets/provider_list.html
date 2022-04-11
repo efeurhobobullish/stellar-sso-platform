@@ -17,8 +17,9 @@
         {% endfor %}
     {% endif %}
 
-        <a title="{{provider.name}}" class="socialaccount_provider {{provider.id}} btn btn-outline-primary form-control my-2" 
-        href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+        <a title="{{provider.name}}" class="socialaccount_provider {{provider.id}}
+        btn btn-outline-{% if provider.id == 'google' %}danger{% else %}primary{% endif %}
+        form-control my-2" href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
         {% if provider.id == "facebook" %}
             <i class="fab fa-{{provider.id}}-f" aria-hidden="true"></i>
         {% else %}

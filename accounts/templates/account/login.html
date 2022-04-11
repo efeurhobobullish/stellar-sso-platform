@@ -5,56 +5,64 @@
 
 {% load crispy_forms_filters %}
 
-{% block head_title %}{% trans "Sign In" %}{% endblock %}
+{% block head_title %}  {% trans "Sign In" %}   {% endblock %}
+
+<!-- using extra head reserve -->
+{% block extra_head %}
+<style>
+    .container-box {
+        background-color: pink;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 
 <!-- ---------------- start -->
-<div class = "container-fluid container-box">
-    <p>{% trans "Dealing with index from SSO here! Build your forms" %}</p>
+<p>{% trans "Index from SSO here! Build your forms, or " %}<a href="{{ signup_url }}">sign up</a></p>
 
-    <form class="form py-5 px-5" method="POST" action="{% url 'account_login' %}">
-        {% csrf_token %}
+<form class="form py-5 px-5" method="POST" action="{% url 'account_login' %}">
+    {% csrf_token %}
 
-        {{ form|crispy }}
+    {{ form|crispy }}
 
-        {% if redirect_field_value %}
-        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-        {% endif %}
+    {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+    {% endif %}
 
-        <button class="btn btn-primary form-control" type="submit">{% trans "Log In" %}</button>
+    <button class="btn btn-dark form-control" type="submit">{% trans "Log In" %}</button>
 
-        <hr />
+    <hr class = "bg-muted" />
 
-        <!-- SSO Login -->
-        {% get_providers as socialaccount_providers %}
+    <!-- SSO Login -->
+    {% get_providers as socialaccount_providers %}
 
-        {% if socialaccount_providers %}
-            <!-- -----------------------------story text -->   
-            <!-- <p>{% blocktrans with site.name as site_name %}Please sign in with one
-            of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a>
-            for a {{ site_name }} account and sign in below:{% endblocktrans %}</p> -->
+    {% if socialaccount_providers %}
+        <!-- -----------------------------story text -->   
+        <!-- <p>{% blocktrans with site.name as site_name %} Please sign in with one
+        of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a>
+        for a {{ site_name }} account and sign in below:{% endblocktrans %}</p> -->
 
-            
-            <!-- --- accounts -->
-            <div class="socialaccount_ballot">
+        
+        <!-- --- accounts -->
+        <div class="socialaccount_ballot">
 
-                <div class="socialaccount_providers">
-                    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-                </div>
-
+            <div class="socialaccount_providers">
+                {% include "socialaccount/snippets/provider_list.html" with process="login" %}
             </div>
-            {% include "socialaccount/snippets/login_extra.html" %}
 
-        {% else %}
-            <p>{% blocktrans %}If you have not created an account yet, then please
-            <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
-        {% endif %}
+        </div>
+        {% include "socialaccount/snippets/login_extra.html" %}
 
-        <!-- forgot password -->
-        <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "forgot password?" %}</a>
+    {% else %}
+        <p>{% blocktrans %}If you have not created an account yet, then please
+        <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
+    {% endif %}
 
-    </form>
-</div>
+    <!-- forgot password -->
+    <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "forgot password?" %}</a>
+
+</form>
+
 
 {% endblock %}
