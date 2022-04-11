@@ -146,6 +146,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SITE_ID = 1
+
 
 # auth backends
 AUTHENTICATION_BACKENDS = [
