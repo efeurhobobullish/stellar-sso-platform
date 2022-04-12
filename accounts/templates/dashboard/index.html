@@ -1,7 +1,7 @@
 {% extends 'account/base.html' %}
 
 {% block content %}
-    <div class="text-center">
+    <div class="text-center text-white">
         <h2>Home</h2>
         <p>Hello {{ user.first_name }}!</p>
         {% if user.is_authenticated %}
@@ -10,6 +10,11 @@
             <p>You seem to not be logged, please sign in or create a new account.</p>
         {% endif %}
         
-        <a class="btn btn-dark" href="{% url 'socialaccount_connections' %}">Settings</a>
+        <a class="btn btn-dark mybtn" href="{% url 'socialaccount_connections' %}">Settings</a>
+
+        <div class = "cta">
+            <a href=""> <i class="fab fa-lg fa-bitcoin"></i> </a>
+            <a href=""> <i class="far fa-credit-card"></i> </a>
+        </div>
     </div>
 {% endblock %}
