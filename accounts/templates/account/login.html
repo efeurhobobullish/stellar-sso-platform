@@ -13,9 +13,9 @@
 {% block content %}
 
 <!-- ---------------- start -->
-<p>{% trans "Index from SSO here! Build your forms, or " %}<a href="{{ signup_url }}">sign up</a></p>
+<p class = "px-1 px-sm-0 text-center">{% trans "Index from SSO here! Build your forms, or " %}<a href="{{ signup_url }}">sign up</a></p>
 
-<form class="form py-5 px-5" method="POST" action="{% url 'account_login' %}">
+<form class="form py-5 px-sm-5 px-4" method="POST" action="{% url 'account_login' %}">
     {% csrf_token %}
 
     {{ form|crispy }}
