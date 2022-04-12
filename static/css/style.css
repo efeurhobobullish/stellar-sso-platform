@@ -44,7 +44,7 @@ nav {
 	width: 35%;
 	color: #333;
 	background-color: var(--lighter);
-	border: 1px solid #dee2e6;
+	/* border: 1px solid #dee2e6; */
 	border-color: #343a40;
 	border-radius: 6px;
 	box-shadow: rgb(11 43 158 / 15%) 0px 6px 20px -6px;
@@ -56,4 +56,20 @@ nav {
 
 hr {
 	background-color: #6c757d;
+}
+
+.cta {
+	position: fixed;
+	bottom: 15px;
+	right: 25px;
+}
+
+.cta a {
+	display: block;
+	margin-bottom: 13px;
+	color: inherit;
+}
+
+.mybtn {
+	box-shadow: #2a2727ad 1px 1px 8px 0px;
 }
