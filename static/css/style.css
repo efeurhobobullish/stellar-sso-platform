@@ -12,8 +12,7 @@
 body {
 	margin-left: auto;
 	margin-right: auto;
-	/* max-width: 1920px; */
-	background: #fff url("img_tree.png") no-repeat right top;
+	/* background: #fff url("../images/bg-img.jpg") no-repeat right top; */
 	font-family: "Montserrat", sans-serif;
 }
 
@@ -22,6 +21,8 @@ nav {
 	top: 0;
 	left: 0;
 	width: 100%;
+	background-color: #333;
+	z-index: 22;
 }
 
 .fab {
@@ -37,7 +38,8 @@ nav {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	color: var(--lighter);
+	position: relative;
+	/* color: var(--lighter); */
 }
 
 .form {
@@ -74,7 +76,62 @@ hr {
 	box-shadow: #2a2727ad 1px 1px 8px 0px;
 }
 
+/* dashboard */
+.bg-dash {
+	position: absolute;
+	top: 45px;
+	left: 0;
+	background: #343a40;
+	color: white;
+	width: 100%;
+	padding: 50px 7%;
+	height: 50vh;
+	z-index: -1;
+}
+
+.pop-up-lg, .pop-up-sm {
+	/* width: 70%; */
+	padding: 30px;
+	/* border: 1px solid red; */
+	border-radius: 8px;
+	box-shadow: #2a2727ad 1px 1px 8px 0px;
+	z-index: 1;
+	background-color: #fff;
+}
+
+.pop-up-sm {
+	width: 50%;
+}
+
+.pop-up-lg {
+	width: 70%;
+}
+
+.pop-up-lg i, .pop-up-sm i {
+	margin-left: 5px;
+}
+
+.angle-tilt {
+	transform: rotate(-15deg);
+}
+
 /* media queries */
+
+@media screen and (max-width: 468px) {
+	.form-block {
+		display: block;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.pop-up-sm {
+		width: unset;
+	}
+
+	.bg-dash {}
+		padding: 6.5% 7%;
+	}
+}
 
 @media screen and (max-width: 1024px) {
 	.form {
@@ -82,18 +139,29 @@ hr {
 	}
 
 	.cta {
-		right: 5px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
+		position: fixed;
+		bottom: 15px;
+		right: 25px;
+	}
+	
+	.cta a {
+		display: inline-block;
+		/* display: inline; */
+		width: 38px;
+    	height: 34px;
+		padding: 6px 4px;
+		margin: 5px;
+		border-radius: 50%;
+		color: #343a40;
+		background-color: #fff;
+		box-shadow: #343a40 1px 1px 8px 0px;
+		text-align: center;    
 	}
 
-	.cta a {
-		background: #343a40;
-		margin: 5px;
-		padding: 5px 0px;
-		width: 100px;
-		border-radius: 5px;
-		box-shadow: #2a27ad 1px 1px 8px 0px;
+	.pop-up-lg {
+		width: unset;
+	}
+	.pop-up-sm {
+		width: 70%;
 	}
 }
