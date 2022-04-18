@@ -41,5 +41,13 @@ class Stellar():
     def serverConnection(self, server__url):
         """Connect to the server"""
         return Server(horizon_url = server__url)
+    
+    def init_trx(self, source_acc, network_phrase, base_fee):
+        return TransactionBuilder(
+            source_account=source_acc,
+            network_passphrase = network_phrase,
+            base_fee=base_fee
+        )
 
-
+    def ngnt_asset(self):
+        return Asset("NGNT", source_public_key)
