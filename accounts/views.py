@@ -115,3 +115,57 @@ class Dashboard(View, Stellar):
 
         return render(request, self.template_name, context)
 
+    @method_decorator(login_required)
+    def post(self, request):
+        print(request.POST)
+        form = self.form_class(request.POST)
+
+        # if form.is_valid():
+        #     deposit = form.cleaned_data.get('Deposit')
+        #     NGNT = form.cleaned_data.get('NGNT')
+
+        #     print(deposit, NGNT)
+
+        server = self.serverConnection(server_url)
+        network_passphrase = self.set_network_passphrase()
+        base_fee = server.fetch_base_fee()
+
+        # Keys for accounts to issue and receive the new asset
+        # -- sender / issuer
+        issuing_keypair = self.get_or_create_keypair(request, source_secret_key)
+        issuing_public = issuing_keypair.public_key
+        issuing_account = server.load_account(account_id=issuing_public)
+
+        # -- reciever
+        user = StellarResource.objects.get(user=request.user)
+        sec_key = user.secretkey
+
+        distributor_keypair = self.get_or_create_keypair(request, sec_key)
+        distributor_public = distributor_keypair.public_key
+        distributor_account = server.load_account(distributor_public)
+
+        # Create an object to represent the new asset
+        # NGNT = Asset("NGNT", issuing_public)
+        NGNT = self.ngnt_asset()
+
+        trust_transaction = self.init_trx(distributor_account, network_passphrase, base_fee) \
+            .append_change_trust_op(asset=NGNT) \
+            .set_timeout(100) \
+            .build()
+
+        trust_transaction.sign(distributor_keypair)
+        trust_transaction_resp = server.submit_transaction(trust_transaction)
+
+        print(f"Change Trust Transaction Resp:\n{trust_transaction_resp}")
+
+        payment_transaction = self.init_trx(issuing_account, network_passphrase, base_fee) \
+            .append_payment_op(destination=distributor_public, amount="1000", asset=NGNT) \
+            .set_timeout(30) \
+            .build()
+
+        payment_transaction.sign(issuing_keypair)
+        payment_transaction_resp = server.submit_transaction(payment_transaction)
+
+        print(f"Payment Transaction Resp:\n{payment_transaction_resp}")
+
+        return render(request, self.template_name, {'form': form})
