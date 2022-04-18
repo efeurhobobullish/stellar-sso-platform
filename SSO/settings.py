@@ -211,6 +211,14 @@ ACCOUNT_EMAIL_REQUIRED = True
 # for crispy forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+# smtp settings
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 # stellar config
 if DEBUG:
     server_url = "https://horizon-testnet.stellar.org"
