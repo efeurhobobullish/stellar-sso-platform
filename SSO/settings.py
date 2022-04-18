@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -170,7 +170,6 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     'facebook': {
         'METHOD': 'oauth2',
-        # 'SDK_URL': '//connect.facebook.net/{locale}/sdk.js',
         'SCOPE': ['email', 'public_profile'],
         'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
         'INIT_PARAMS': {'cookie': True},
@@ -185,7 +184,6 @@ SOCIALACCOUNT_PROVIDERS = {
             'short_name'
         ],
         'EXCHANGE_TOKEN': True,
-        # 'LOCALE_FUNC': 'path.to.callable',
         'VERIFIED_EMAIL': False,
         'VERSION': 'v13.0',
     }
@@ -195,8 +193,8 @@ SOCIALACCOUNT_PROVIDERS = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-LOGIN_REDIRECT_URL = '/dashboard'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/dashboard'
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 7
 ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 86400  # 1 day in seconds
@@ -212,3 +210,18 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 # for crispy forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# stellar config
+if DEBUG:
+    server_url = "https://horizon-testnet.stellar.org"
+    
+    source_secret_key = config('SOURCE_SECRET_KEY')
+    source_public_key = config('SOURCE_PUBLIC_KEY')
+else:
+    server_url = "https://horizon.stellar.org"
+    source_secret_key = config('SOURCE_SECRET_KEY')
+    source_public_key = config('SOURCE_PUBLIC_KEY')
+
+# Paystack Configuration
+PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
+PAYSTACK_PUBLIC_KEY = config('PAYSTACK_PUBLIC_KEY')
