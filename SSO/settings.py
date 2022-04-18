@@ -230,6 +230,9 @@ else:
     source_secret_key = config('SOURCE_SECRET_KEY')
     source_public_key = config('SOURCE_PUBLIC_KEY')
 
+# custom settings
+APP_CHARGES = '100'
+
 # Paystack Configuration
 PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
 PAYSTACK_PUBLIC_KEY = config('PAYSTACK_PUBLIC_KEY')
