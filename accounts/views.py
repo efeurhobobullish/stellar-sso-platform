@@ -29,3 +29,47 @@ class Home(View, Stellar):
             return redirect('dashboard')
         return render(request, self.template_name, {})
     
+
+    @method_decorator(login_required)
+    def post(self, request):
+        stellarResource, _ = self.get_User_Stellar_Resource(request)
+
+        server = self.serverConnection(server_url)
+        network_passphrase = self.set_network_passphrase()
+        base_fee = server.fetch_base_fee()
+
+        source = self.get_or_create_keypair(request, source_secret_key)
+        source_account = server.load_account(account_id=source.public_key)
+
+        destination = self.get_or_create_keypair(request)
+
+        # print(source, destination)
+        # if destination:
+        #     pass # destination empty?
+        print(f"\n\-----New Keypair: \n\taccount id: {destination.public_key}\
+            \n\tsecret seed: {destination.secret}\n\r------\n\r")
+        
+        print(network_passphrase, base_fee, sep="\n\r")
+
+        # build the transaction
+        transaction = self.init_trx(source_account, network_passphrase, base_fee) \
+            .append_create_account_op(destination=destination.public_key, starting_balance=f"10.0") \
+            .set_timeout(30) \
+            .build()
+
+        # sign $ submit the transaction
+        transaction.sign(source)
+        response = server.submit_transaction(transaction)
+
+        if response["successful"]:
+            stellarResource.acc_ID = destination.public_key
+            stellarResource.secretkey = destination.secret
+            stellarResource.has_account = True
+            stellarResource.save()
+
+        print("\n\r-----------Transaction hash: {}\n\r-----------\n\r".format(response["hash"]))
+
+        # return redirect('dashboard')
+        return render(request, self.template_name, {
+            "account_created": True
+        })
