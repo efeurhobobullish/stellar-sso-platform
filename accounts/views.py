@@ -73,3 +73,45 @@ class Home(View, Stellar):
         return render(request, self.template_name, {
             "account_created": True
         })
+
+
+class Dashboard(View, Stellar):
+    form_class = StellarAccountForm
+    model = StellarResource
+    template_name = 'dashboard/dashboard.html'
+
+    @method_decorator(login_required)
+    def get(self, request):
+        form = self.form_class()
+        wallet_balance = 0.00
+        
+        # 1. retrieve user stellar accountID
+        try:
+            user = StellarResource.objects.get(user=request.user)
+            pub_key = user.acc_ID
+        except self.model.DoesNotExist:
+            return redirect('home')
+
+        if pub_key:
+            # 2. retreive and display wallet balance
+            server = self.serverConnection(server_url)
+            wallet = server.accounts().account_id(pub_key).call()
+
+            for balance in wallet['balances']:
+                print(f"Type: {balance['asset_type']}, Balance: {balance['balance']}\n\n\n")
+                # if balance['asset_type'] == 'native':
+                    # wallet_balance = balance['balance']
+                    # break
+            
+            print(wallet_balance, "CONTEXT OF DASH")
+            
+            # 3. render balance via context
+            context = {
+                'form': form,
+                'wallet_balance': round(float(wallet_balance), 3),
+                'paystack_public_key': PAYSTACK_PUBLIC_KEY,
+                'charges': APP_CHARGES,
+            }
+
+        return render(request, self.template_name, context)
+
