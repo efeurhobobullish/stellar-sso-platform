@@ -1,0 +1,149 @@
+{% extends 'account/base.html' %}
+
+{% block extra_head %}
+<script src="https://js.paystack.co/v1/inline.js"></script>
+{% endblock %}
+
+{% block content %}
+
+    <div class = "bg-dash">
+        <h3>Welcome, {{ user.username }}! </h3>
+        <h6>Balance: {{ wallet_balance }} NGNT </h6>
+    </div>
+    
+    <div class = "pop-up-lg">
+        <p>Fund Wallet <i class="far fa-credit-card angle-tilt"></i></p>
+        <hr />
+
+        <form method="POST", action="{% url 'dashboard' %}">
+            {% csrf_token %}
+            
+            <div class="form-row form-block">
+                <div class="col">
+                    {{ form.Deposit.errors }}
+                    <small class="form-text text-muted"> <label for="{{ form.Deposit.id_for_label }}">Deposit: </label> </small>
+                    {{ form.Deposit }}
+                </div>
+                
+                <div class="col">
+                    {{ form.NGNT.errors }}
+                    <small class="form-text text-muted"> <label for="{{ form.NGNT.id_for_label }}">NGNT </label> </small>
+                    {{ form.NGNT }}
+                </div>
+            </div>
+            <br />
+            <div class="form-group form-row">
+                <button id="submit" class="btn btn-primary mx-1"> Continue <i class="fas fa-long-arrow-alt-right"></i></button>
+            </div>
+            <small class="form-text text-muted"> Please Note Transaction fees of NGN {{charges}} are deducted. </small>
+        </form>
+
+    </div>
+
+    <!-- fixed -->
+    <div class = "cta">
+        <a href=""> <i class="fab fa-lg fa-bitcoin"></i> </a>
+        <a href=""> <i class="far fa-credit-card"></i> </a>
+        <a href="{% url 'socialaccount_connections' %}"> <i class="fa fa-cogs"></i> </a>
+    </div>
+
+    <script>
+        // Replica func
+        const replicateInput = () => {
+            let replica = document.getElementById("id_Deposit");
+            document.getElementById("id_NGNT").value = replica.value;
+        };
+
+        document.querySelector('#id_Deposit').addEventListener("keyup", replicateInput);
+
+
+        // Paystack Pop up
+        function payWithPaystack(){
+            const priceNGN = document.querySelector('#id_Deposit').value;
+            const priceNGNT = document.querySelector('#id_NGNT').value;
+            const final_price = parseFloat(priceNGN) + {{ charges }};
+
+            console.log(priceNGN, typeof priceNGN)
+            console.log(parseFloat(priceNGN), typeof parseFloat(priceNGN))
+            console.log(parseFloat(priceNGN), {{ charges }}, final_price )
+
+            var handler = PaystackPop.setup({
+                key: '{{ paystack_public_key }}',
+                email: '{{ request.user.email }}',
+                amount: final_price,
+                // amount: `${final_price}`,
+                ref: ''+Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+                metadata: {
+                    custom_fields: [
+                        {
+                            display_name: "Mobile Number",
+                            variable_name: "mobile_number",
+                            value: "+00001112222"
+                        }
+                    ]
+                },
+                callback: function(response){
+                    console.log(response)
+                    console.log(response.reference)
+                    console.log(response.trxref)
+
+                    // change button to loading transaction + loader
+                    document.getElementById("submit").innerHTML = `Processing Transaction <i id = "spinner" class = "fa fa-spinner fa-pulse"></i>`;
+                    
+                    // fetch call to backend, pass amount and transaction reference
+                    transferCrypto(response.trxref, priceNGN, priceNGNT)
+                },
+                onClose: function(){
+                    alert('Your transaction is being processed');
+                    // change button to loading transaction + loader
+                }
+            });
+            handler.openIframe();
+        };
+
+        // document.getElementById("submit").addEventListener("click", function(event){
+        //     event.preventDefault();
+        //     console.log('executed')
+        //     payWithPaystack();
+        // });
+
+        // Crypto Transaction
+        const transferCrypto = (trx_ref, amount_NGN, amount_NGNT) => {
+            const cryptoCharges = {
+                trx_ref,
+                amount_NGN,
+                amount_NGNT,
+            };
+
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    "X-CSRFToken": '{{ csrf_token }}',
+                },
+                body: JSON.stringify(cryptoCharges),
+            };
+
+            fetch("{% url 'dashboard' %}", options)
+            .then(data => {
+                console.log(data.json())
+                if (!data.ok) {
+                    throw Error(data.status);
+                }
+                if (data.status === 200) {
+                    console.log("Post successfully created!");
+                }
+                return data.json();
+            })
+            .then(response => {
+                console.log(response.status);
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        };
+    </script>
+
+{% endblock %}

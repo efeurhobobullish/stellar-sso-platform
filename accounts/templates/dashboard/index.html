@@ -1,20 +1,64 @@
 {% extends 'account/base.html' %}
 
 {% block content %}
-    <div class="text-center text-white">
-        <h2>Home</h2>
-        <p>Hello {{ user.first_name }}!</p>
-        {% if user.is_authenticated %}
-            <p>Your Username : {{ user }}</p>
-        {% else %}
-            <p>You seem to not be logged, please sign in or create a new account.</p>
-        {% endif %}
-        
-        <a class="btn btn-dark mybtn" href="{% url 'socialaccount_connections' %}">Settings</a>
 
-        <div class = "cta">
-            <a href=""> <i class="fab fa-lg fa-bitcoin"></i> </a>
-            <a href=""> <i class="far fa-credit-card"></i> </a>
+<div class = "bg-dash">
+        <h3>Welcome, {{ user.username }}! </h3>
+    </div>
+    
+    <div class = "pop-up-sm">
+        <p>Account Creation</p>
+        <hr />
+
+        <p class="form-text text-muted">You don't seem to have an available stellar account.</p>
+        <p class="form-text text-muted">You need an account to continue.</p>
+
+        {% if account_created %}
+            <small class="text-muted">Account Created!</small>
+        {% endif %}
+
+        <div class="form-group form-row">
+            {% if not account_created %}
+                <button type="submit" id = "createWallet" class="btn btn-primary mx-1"> Create Account </button>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-primary mx-1"> Go to dashboard </a>
+            {% endif %}
         </div>
     </div>
+
+    <!-- fixed -->
+    <div class = "cta">
+        <a href=""> <i class="fab fa-lg fa-bitcoin"></i> </a>
+        <a href=""> <i class="far fa-credit-card"></i> </a>
+        <a href="{% url 'socialaccount_connections' %}"> <i class="fa fa-cogs"></i> </a>
+    </div>
+
+
+    <script>
+        let submitBtn = document.querySelector('#createWallet');
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', () => {
+                submitBtn.innerHTML = `Create Account <i id = "spinner" class = "fa fa-spinner fa-pulse"></i>`;
+                fetch("{% url 'home' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        "X-CSRFToken": '{{ csrf_token }}',
+                    }
+                }).then((response) => {
+                    console.log("Post successfully created!");
+                    console.log(response.status);
+                    if (response.status === 200) {
+                        window.location.replace("{% url 'dashboard' %}");
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
+                console.log('Btn clicked: Request Sent')
+            });
+        }
+        
+    </script>
 {% endblock %}
