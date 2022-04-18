@@ -34,4 +34,12 @@ class Stellar():
                 requests.get(f"https://friendbot.stellar.org?addr={keypair.public_key}")
             return keypair
 
+    def set_network_passphrase(self):
+        """Connect to the server"""
+        return Network.TESTNET_NETWORK_PASSPHRASE if DEBUG else Network.PUBLIC_NETWORK_PASSPHRASE
+
+    def serverConnection(self, server__url):
+        """Connect to the server"""
+        return Server(horizon_url = server__url)
+
 
