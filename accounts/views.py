@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -83,7 +84,7 @@ class Dashboard(View, Stellar):
     @method_decorator(login_required)
     def get(self, request):
         form = self.form_class()
-        wallet_balance = 0.00
+        
         
         # 1. retrieve user stellar accountID
         try:
@@ -96,12 +97,16 @@ class Dashboard(View, Stellar):
             # 2. retreive and display wallet balance
             server = self.serverConnection(server_url)
             wallet = server.accounts().account_id(pub_key).call()
+            print('\n\n', wallet,'\n\n')
 
-            for balance in wallet['balances']:
-                print(f"Type: {balance['asset_type']}, Balance: {balance['balance']}\n\n\n")
-                # if balance['asset_type'] == 'native':
-                    # wallet_balance = balance['balance']
-                    # break
+            if len(wallet['balances']) == 1:
+                wallet_balance = 0.00
+            else:
+                for balance in wallet['balances']:
+                    print(f"Type: {balance['asset_type']}, Balance: {balance['balance']}\n\n\n")
+                    if balance['asset_code'] == 'NGNT':
+                        wallet_balance = balance['balance']
+                        break
             
             print(wallet_balance, "CONTEXT OF DASH")
             
@@ -117,14 +122,12 @@ class Dashboard(View, Stellar):
 
     @method_decorator(login_required)
     def post(self, request):
-        print(request.POST)
         form = self.form_class(request.POST)
+        wallet_balance = 0.00
 
-        # if form.is_valid():
-        #     deposit = form.cleaned_data.get('Deposit')
-        #     NGNT = form.cleaned_data.get('NGNT')
-
-        #     print(deposit, NGNT)
+        body_unicode = request.body.decode('utf-8')
+        body_data = json.loads(body_unicode)
+        deposit_price = body_data['amount_NGN']
 
         server = self.serverConnection(server_url)
         network_passphrase = self.set_network_passphrase()
@@ -159,7 +162,7 @@ class Dashboard(View, Stellar):
         print(f"Change Trust Transaction Resp:\n{trust_transaction_resp}")
 
         payment_transaction = self.init_trx(issuing_account, network_passphrase, base_fee) \
-            .append_payment_op(destination=distributor_public, amount="1000", asset=NGNT) \
+            .append_payment_op(destination=distributor_public, amount=deposit_price, asset=NGNT) \
             .set_timeout(30) \
             .build()
 
@@ -168,4 +171,19 @@ class Dashboard(View, Stellar):
 
         print(f"Payment Transaction Resp:\n{payment_transaction_resp}")
 
-        return render(request, self.template_name, {'form': form})
+        wallet = server.accounts().account_id(distributor_public).call()
+
+        for balance in wallet['balances']:
+            print(f"Type: {balance['asset_type']}, Balance: {balance['balance']}\n\n\n")
+
+            if balance['asset_code'] == 'NGNT':
+                wallet_balance = balance['balance']
+                break
+
+        context = {
+            'form': form,
+            'wallet_balance': round(float(wallet_balance), 3),
+            'paystack_public_key': PAYSTACK_PUBLIC_KEY,
+            'charges': APP_CHARGES,
+        }
+        return render(request, self.template_name, context)
