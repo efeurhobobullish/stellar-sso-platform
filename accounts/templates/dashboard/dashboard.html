@@ -70,8 +70,8 @@
             var handler = PaystackPop.setup({
                 key: '{{ paystack_public_key }}',
                 email: '{{ request.user.email }}',
-                amount: final_price,
-                // amount: `${final_price}`,
+                amount: parseFloat(final_price).toFixed(2),
+                // amount: `${final_price}.00`,
                 ref: ''+Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
                 metadata: {
                     custom_fields: [
@@ -85,13 +85,14 @@
                 callback: function(response){
                     console.log(response)
                     console.log(response.reference)
-                    console.log(response.trxref)
+                    alert(`Please copy your transaction refernce with paystack as it indicates your payment.
+                    Transaction Ref: ${response.trxref}`)
 
                     // change button to loading transaction + loader
                     document.getElementById("submit").innerHTML = `Processing Transaction <i id = "spinner" class = "fa fa-spinner fa-pulse"></i>`;
                     
                     // fetch call to backend, pass amount and transaction reference
-                    transferCrypto(response.trxref, priceNGN, priceNGNT)
+                    transferCrypto(response.trxref, priceNGN)
                 },
                 onClose: function(){
                     alert('Your transaction is being processed');
@@ -101,18 +102,18 @@
             handler.openIframe();
         };
 
-        // document.getElementById("submit").addEventListener("click", function(event){
-        //     event.preventDefault();
-        //     console.log('executed')
-        //     payWithPaystack();
-        // });
+        document.getElementById("submit").addEventListener("click", function(event){
+            event.preventDefault();
+            console.log('executed')
+            payWithPaystack();
+        });
 
         // Crypto Transaction
-        const transferCrypto = (trx_ref, amount_NGN, amount_NGNT) => {
+        const transferCrypto = (trx_ref, amount_NGN) => {
+            
             const cryptoCharges = {
-                trx_ref,
-                amount_NGN,
-                amount_NGNT,
+                amount_NGN: amount_NGN,
+                trx_ref: trx_ref,
             };
 
             const options = {
@@ -125,14 +126,18 @@
                 body: JSON.stringify(cryptoCharges),
             };
 
+            console.log('triggered', JSON.stringify(cryptoCharges))
+
             fetch("{% url 'dashboard' %}", options)
             .then(data => {
-                console.log(data.json())
                 if (!data.ok) {
                     throw Error(data.status);
                 }
                 if (data.status === 200) {
                     console.log("Post successfully created!");
+                    alert("Post successfully created!");
+                    document.getElementById("submit").innerHTML = `Transaction completed!`;
+                    // window.location.replace("{% url 'dashboard' %}");
                 }
                 return data.json();
             })

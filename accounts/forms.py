@@ -8,12 +8,12 @@ class StellarAccountForm(forms.Form):
             'class' : 'form-control',
         },
     ))
-    NGNT = forms.DecimalField(widget=forms.NumberInput(
+    NGNT = forms.DecimalField(required=False, widget=forms.NumberInput(
         attrs={
             'placeholder' : 'amount NGNT',
             'class' : 'form-control',
             'readonly' : True,
             'disabled': True,
-            'required': False
         },
     ))
+    trx_ref = forms.CharField(required=False)
