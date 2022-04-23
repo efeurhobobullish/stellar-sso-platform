@@ -56,22 +56,17 @@
 
         document.querySelector('#id_Deposit').addEventListener("keyup", replicateInput);
 
-
+        
         // Paystack Pop up
         function payWithPaystack(){
-            const priceNGN = document.querySelector('#id_Deposit').value;
-            const priceNGNT = document.querySelector('#id_NGNT').value;
-            const final_price = parseFloat(priceNGN) + {{ charges }};
-
-            // console.log(priceNGN, typeof priceNGN)
-            // console.log(parseFloat(priceNGN), typeof parseFloat(priceNGN))
-            // console.log(parseFloat(priceNGN), {{ charges }}, final_price )
+            let priceNGN = document.querySelector('#id_Deposit').value;
+            let priceNGNT = document.querySelector('#id_NGNT').value;
+            let final_price = parseFloat(priceNGN) + {{ charges }};
 
             var handler = PaystackPop.setup({
                 key: '{{ paystack_public_key }}',
                 email: '{{ request.user.email }}',
-                amount: parseFloat(final_price).toFixed(2),
-                // amount: `${final_price}.00`,
+                amount: parseFloat(final_price) * 100,
                 ref: ''+Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
                 metadata: {
                     custom_fields: [
@@ -83,8 +78,8 @@
                     ]
                 },
                 callback: function(response){
-                    console.log(response)
-                    console.log(response.reference)
+                    // console.log(response)
+                    // console.log(response.reference)
                     alert(`Please copy your transaction refernce with paystack as it indicates your payment.
                     Transaction Ref: ${response.trxref}`)
 
@@ -95,8 +90,7 @@
                     transferCrypto(response.trxref, priceNGN)
                 },
                 onClose: function(){
-                    alert('Your transaction is being processed');
-                    // change button to loading transaction + loader
+                    alert('Your transaction is being cancelled!');
                 }
             });
             handler.openIframe();
@@ -104,7 +98,12 @@
 
         document.getElementById("submit").addEventListener("click", function(event){
             event.preventDefault();
-            console.log('executed')
+
+            let priceNGN = document.querySelector('#id_Deposit').value;
+            let final_price = parseFloat(priceNGN) + {{ charges }};
+            console.log(parseFloat(final_price), typeof parseFloat(final_price));
+
+            // console.log('paystack triggerred');
             payWithPaystack();
         });
 
@@ -126,7 +125,7 @@
                 body: JSON.stringify(cryptoCharges),
             };
 
-            console.log('triggered', JSON.stringify(cryptoCharges))
+            console.log('Crypto payment transfer triggered', JSON.stringify(cryptoCharges));
 
             fetch("{% url 'dashboard' %}", options)
             .then(data => {
@@ -134,17 +133,10 @@
                     throw Error(data.status);
                 }
                 if (data.status === 200) {
-                    console.log("Post successfully created!");
-                    alert("Post successfully created!");
                     document.getElementById("submit").innerHTML = `Transaction completed!`;
                     alert('Transaction completed!');
                     window.location.replace("{% url 'dashboard' %}");
                 }
-                return data.json();
-            })
-            .then(response => {
-                // console.log(response.status);
-                // console.log(response);
             })
             .catch(error => {
                 console.log(error);
