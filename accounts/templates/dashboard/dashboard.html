@@ -63,9 +63,9 @@
             const priceNGNT = document.querySelector('#id_NGNT').value;
             const final_price = parseFloat(priceNGN) + {{ charges }};
 
-            console.log(priceNGN, typeof priceNGN)
-            console.log(parseFloat(priceNGN), typeof parseFloat(priceNGN))
-            console.log(parseFloat(priceNGN), {{ charges }}, final_price )
+            // console.log(priceNGN, typeof priceNGN)
+            // console.log(parseFloat(priceNGN), typeof parseFloat(priceNGN))
+            // console.log(parseFloat(priceNGN), {{ charges }}, final_price )
 
             var handler = PaystackPop.setup({
                 key: '{{ paystack_public_key }}',
@@ -137,13 +137,14 @@
                     console.log("Post successfully created!");
                     alert("Post successfully created!");
                     document.getElementById("submit").innerHTML = `Transaction completed!`;
-                    // window.location.replace("{% url 'dashboard' %}");
+                    alert('Transaction completed!');
+                    window.location.replace("{% url 'dashboard' %}");
                 }
                 return data.json();
             })
             .then(response => {
-                console.log(response.status);
-                console.log(response);
+                // console.log(response.status);
+                // console.log(response);
             })
             .catch(error => {
                 console.log(error);
