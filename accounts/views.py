@@ -47,10 +47,10 @@ class Home(View, Stellar):
         # print(source, destination)
         # if destination:
         #     pass # destination empty?
-        print(f"\n\-----New Keypair: \n\taccount id: {destination.public_key}\
-            \n\tsecret seed: {destination.secret}\n\r------\n\r")
+        # print(f"\n\-----New Keypair: \n\taccount id: {destination.public_key}\
+        #     \n\tsecret seed: {destination.secret}\n\r------\n\r")
         
-        print(network_passphrase, base_fee, sep="\n\r")
+        # print(network_passphrase, base_fee, sep="\n\r")
 
         # build the transaction
         transaction = self.init_trx(source_account, network_passphrase, base_fee) \
@@ -68,7 +68,7 @@ class Home(View, Stellar):
             stellarResource.has_account = True
             stellarResource.save()
 
-        print("\n\r-----------Transaction hash: {}\n\r-----------\n\r".format(response["hash"]))
+        # print("\n\r-----------Transaction hash: {}\n\r-----------\n\r".format(response["hash"]))
 
         # return redirect('dashboard')
         return render(request, self.template_name, {
@@ -97,18 +97,18 @@ class Dashboard(View, Stellar):
             # 2. retreive and display wallet balance
             server = self.serverConnection(server_url)
             wallet = server.accounts().account_id(pub_key).call()
-            print('\n\n', wallet,'\n\n')
+            # print('\n\n', wallet,'\n\n')
 
             if len(wallet['balances']) == 1:
                 wallet_balance = 0.00
             else:
                 for balance in wallet['balances']:
-                    print(f"Type: {balance['asset_type']}, Balance: {balance['balance']}\n\n\n")
+                    # print(f"Type: {balance['asset_type']}, Balance: {balance['balance']}\n\n\n")
                     if balance['asset_code'] == 'NGNT':
                         wallet_balance = balance['balance']
                         break
             
-            print(wallet_balance, "CONTEXT OF DASH")
+            # print(wallet_balance, "CONTEXT OF DASH")
             
             # 3. render balance via context
             context = {
@@ -159,7 +159,7 @@ class Dashboard(View, Stellar):
         trust_transaction.sign(distributor_keypair)
         trust_transaction_resp = server.submit_transaction(trust_transaction)
 
-        print(f"Change Trust Transaction Resp:\n{trust_transaction_resp}")
+        # print(f"Change Trust Transaction Resp:\n{trust_transaction_resp}")
 
         payment_transaction = self.init_trx(issuing_account, network_passphrase, base_fee) \
             .append_payment_op(destination=distributor_public, amount=deposit_price, asset=NGNT) \
@@ -169,12 +169,12 @@ class Dashboard(View, Stellar):
         payment_transaction.sign(issuing_keypair)
         payment_transaction_resp = server.submit_transaction(payment_transaction)
 
-        print(f"Payment Transaction Resp:\n{payment_transaction_resp}")
+        # print(f"Payment Transaction Resp:\n{payment_transaction_resp}")
 
         wallet = server.accounts().account_id(distributor_public).call()
 
         for balance in wallet['balances']:
-            print(f"Type: {balance['asset_type']}, Balance: {balance['balance']}\n\n\n")
+            # print(f"Type: {balance['asset_type']}, Balance: {balance['balance']}\n\n\n")
 
             if balance['asset_code'] == 'NGNT':
                 wallet_balance = balance['balance']
