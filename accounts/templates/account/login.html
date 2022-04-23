@@ -13,7 +13,7 @@
 {% block content %}
 
 <!-- ---------------- start -->
-<p class = "px-1 px-sm-0 text-center">{% trans "Index from SSO here! Build your forms, or " %}<a href="{{ signup_url }}">sign up</a></p>
+<p class = "px-1 px-sm-0 text-center"> {% trans "Welcome to Farmhouse, " %} <a href="{{ signup_url }}">Sign up</a> {% trans "if you don't have an account " %} </p>
 
 <form class="form py-5 px-sm-5 px-4" method="POST" action="{% url 'account_login' %}">
     {% csrf_token %}
@@ -58,5 +58,11 @@
 
 </form>
 
+<script>
+    let height = window.innerHeight;
+
+    document.querySelector('.container-box').style.height = `${height}px`;
+    window.onresize = function(){ location.reload(); };
+</script>
 
 {% endblock %}
