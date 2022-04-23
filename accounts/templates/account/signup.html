@@ -54,4 +54,11 @@
     </form>
     <!-- </div>
 </div> -->
+
+<script>
+    let height = window.innerHeight;
+
+    document.querySelector('.container-box').style.height = `${height}px`;
+    window.onresize = function(){ location.reload(); }
+</script>
 {% endblock %}
