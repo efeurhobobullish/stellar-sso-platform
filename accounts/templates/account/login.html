@@ -15,7 +15,7 @@
 <!-- ---------------- start -->
 <p class = "px-1 px-sm-0 text-center"> {% trans "Welcome to Farmhouse, " %} <a href="{{ signup_url }}">Sign up</a> {% trans "if you don't have an account " %} </p>
 
-<form class="form py-5 px-sm-5 px-4" method="POST" action="{% url 'account_login' %}">
+<form class="form p-sm-5 p-4" method="POST" action="{% url 'account_login' %}">
     {% csrf_token %}
 
     {{ form|crispy }}
