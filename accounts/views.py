@@ -29,7 +29,6 @@ class Home(View, Stellar):
         if has_wallet:
             return redirect('dashboard')
         return render(request, self.template_name, {})
-    
 
     @method_decorator(login_required)
     def post(self, request):
@@ -49,7 +48,7 @@ class Home(View, Stellar):
         #     pass # destination empty?
         # print(f"\n\-----New Keypair: \n\taccount id: {destination.public_key}\
         #     \n\tsecret seed: {destination.secret}\n\r------\n\r")
-        
+
         # print(network_passphrase, base_fee, sep="\n\r")
 
         # build the transaction
@@ -84,8 +83,8 @@ class Dashboard(View, Stellar):
     @method_decorator(login_required)
     def get(self, request):
         form = self.form_class()
-        
-        
+        wallet_balance = 0.00
+
         # 1. retrieve user stellar accountID
         try:
             user = StellarResource.objects.get(user=request.user)
@@ -99,24 +98,22 @@ class Dashboard(View, Stellar):
             wallet = server.accounts().account_id(pub_key).call()
             # print('\n\n', wallet,'\n\n')
 
-            if len(wallet['balances']) == 1:
-                wallet_balance = 0.00
-            else:
+            if len(wallet['balances']) > 1:
                 for balance in wallet['balances']:
                     # print(f"Type: {balance['asset_type']}, Balance: {balance['balance']}\n\n\n")
                     if balance['asset_code'] == 'NGNT':
                         wallet_balance = balance['balance']
                         break
-            
-            # print(wallet_balance, "CONTEXT OF DASH")
-            
-            # 3. render balance via context
-            context = {
-                'form': form,
-                'wallet_balance': round(float(wallet_balance), 3),
-                'paystack_public_key': PAYSTACK_PUBLIC_KEY,
-                'charges': APP_CHARGES,
-            }
+        else:
+            return redirect('home')
+
+        # 3. render balance via context
+        context = {
+            'form': form,
+            'wallet_balance': round(float(wallet_balance), 3),
+            'paystack_public_key': PAYSTACK_PUBLIC_KEY,
+            'charges': APP_CHARGES,
+        }
 
         return render(request, self.template_name, context)
 
@@ -135,7 +132,8 @@ class Dashboard(View, Stellar):
 
         # Keys for accounts to issue and receive the new asset
         # -- sender / issuer
-        issuing_keypair = self.get_or_create_keypair(request, source_secret_key)
+        issuing_keypair = self.get_or_create_keypair(
+            request, source_secret_key)
         issuing_public = issuing_keypair.public_key
         issuing_account = server.load_account(account_id=issuing_public)
 
@@ -167,7 +165,8 @@ class Dashboard(View, Stellar):
             .build()
 
         payment_transaction.sign(issuing_keypair)
-        payment_transaction_resp = server.submit_transaction(payment_transaction)
+        payment_transaction_resp = server.submit_transaction(
+            payment_transaction)
 
         # print(f"Payment Transaction Resp:\n{payment_transaction_resp}")
 
