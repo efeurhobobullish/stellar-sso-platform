@@ -116,26 +116,6 @@ hr {
 }
 
 /* media queries */
-
-@media screen and (max-width: 468px) {
-	.form-block {
-		display: block;
-	}
-	.form {
-		width: 100%;
-	}
-}
-
-@media screen and (max-width: 768px) {
-	.pop-up-sm {
-		width: unset;
-	}
-
-	.bg-dash {
-		padding: 6.5% 7%;
-	}
-}
-
 @media screen and (max-width: 1024px) {
 	.form {
 		width: unset;
@@ -166,5 +146,23 @@ hr {
 	}
 	.pop-up-sm {
 		width: 70%;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.bg-dash {
+		padding: 6.5% 7%;
+	}
+}
+
+@media screen and (max-width: 468px) {
+	.form-block {
+		display: block;
+	}
+	.form {
+		width: 100%;
+	}
+	.pop-up-sm {
+		width: 100%;
 	}
 }
