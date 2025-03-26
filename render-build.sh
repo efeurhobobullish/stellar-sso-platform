@@ -1,9 +1,8 @@
-#!/usr/bin/env bash
-set -o errexit  
+#!/bin/bash
 
-# Install system dependencies
-apt-get update && apt-get install -y python3.11-dev libpq-dev gcc build-essential
+# Install required system packages
+apt-get update && apt-get install -y build-essential python3-dev libssl-dev libffi-dev python3-pip
 
-# Upgrade pip & install dependencies
-pip install --upgrade pip  
-pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
